@@ -22,12 +22,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -56,14 +53,44 @@ fun ReplyListOnlyContent(
     onEmailCardPressed: (Email) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val emails = replyUiState.currentMailboxEmails
+    ReplyEmailList(
+        emails = replyUiState.currentMailboxEmails,
+        onEmailCardPressed = onEmailCardPressed,
+        modifier = modifier
+    )
+}
 
-    LazyColumn(
+@Composable
+fun ReplyListAndDetailContent(
+    replyUiState: ReplyUiState,
+    onEmailCardPressed: (Email) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val activity = LocalContext.current as Activity
+    Row(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(
-            dimensionResource(R.dimen.email_list_item_vertical_spacing)
-        )
+        horizontalArrangement = Arrangement.SpaceEvenly
     ) {
+        ReplyEmailList(
+            emails = replyUiState.currentMailboxEmails,
+            onEmailCardPressed = onEmailCardPressed,
+            modifier = Modifier.weight(1f)
+        )
+        ReplyDetailsScreen(
+            replyUiState = replyUiState,
+            modifier = Modifier.weight(1f),
+            onBackPressed = { activity.finish() }
+        )
+    }
+}
+
+@Composable
+fun ReplyEmailList(
+    emails: List<Email>,
+    onEmailCardPressed: (Email) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(modifier = modifier) {
         item {
             ReplyHomeTopBar(
                 modifier = Modifier
@@ -75,52 +102,9 @@ fun ReplyListOnlyContent(
             ReplyEmailListItem(
                 email = email,
                 selected = false,
-                onCardClick = {
-                    onEmailCardPressed(email)
-                }
+                onCardClick = { onEmailCardPressed(email) }
             )
         }
-    }
-}
-
-@Composable
-fun ReplyListAndDetailContent(
-    replyUiState: ReplyUiState,
-    onEmailCardPressed: (Email) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val emails = replyUiState.currentMailboxEmails
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        LazyColumn(
-            contentPadding = WindowInsets.statusBars.asPaddingValues(),
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = dimensionResource(R.dimen.email_list_only_horizontal_padding)),
-            verticalArrangement = Arrangement.spacedBy(
-                dimensionResource(R.dimen.email_list_item_vertical_spacing)
-            )
-        ) {
-            items(emails, key = { email -> email.id }) { email ->
-                ReplyEmailListItem(
-                    email = email,
-                    selected = replyUiState.currentSelectedEmail.id == email.id,
-                    onCardClick = {
-                        onEmailCardPressed(email)
-                    },
-                )
-            }
-        }
-        val activity = LocalContext.current as Activity
-        ReplyDetailsScreen(
-            replyUiState = replyUiState,
-            modifier = Modifier
-                .padding(top = dimensionResource(R.dimen.email_list_item_vertical_spacing))
-                .weight(1f),
-            onBackPressed = {}
-        )
     }
 }
 

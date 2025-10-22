@@ -95,6 +95,7 @@ fun ReplyHomeScreen(
     )
 
     if (navigationType == ReplyNavigationType.PERMANENT_NAVIGATION_DRAWER) {
+        val navigationDrawerContentDescription = stringResource(R.string.navigation_drawer)
         PermanentNavigationDrawer(
             drawerContent = {
                 PermanentDrawerSheet(Modifier.width(dimensionResource(R.dimen.drawer_width))) {
@@ -109,7 +110,8 @@ fun ReplyHomeScreen(
                             .padding(dimensionResource(R.dimen.drawer_padding_content))
                     )
                 }
-            }
+            },
+            modifier = Modifier.testTag(navigationDrawerContentDescription)
         ) {
             ReplyAppContent(
                 navigationType = navigationType,
@@ -156,10 +158,12 @@ private fun ReplyAppContent(
     Box(modifier = modifier) {
         Row(modifier = Modifier.fillMaxSize()) {
             AnimatedVisibility(visible = navigationType == ReplyNavigationType.NAVIGATION_RAIL) {
+                val navigationRailContentDescription = stringResource(R.string.navigation_rail)
                 ReplyNavigationRail(
                     currentTab = replyUiState.currentMailbox,
                     onTabPressed = onTabPressed,
-                    navigationItemContentList = navigationItemContentList
+                    navigationItemContentList = navigationItemContentList,
+                    modifier = Modifier.testTag(navigationRailContentDescription)
                 )
             }
             Column(
@@ -184,49 +188,17 @@ private fun ReplyAppContent(
                     )
                 }
                 AnimatedVisibility(visible = navigationType == ReplyNavigationType.BOTTOM_NAVIGATION) {
+                    val bottomNavigationContentDescription = stringResource(R.string.navigation_bottom)
                     ReplyBottomNavigationBar(
                         currentTab = replyUiState.currentMailbox,
                         onTabPressed = onTabPressed,
-                        navigationItemContentList = navigationItemContentList
+                        navigationItemContentList = navigationItemContentList,
+                        modifier = Modifier.testTag(bottomNavigationContentDescription)
                     )
                 }
             }
         }
     }
-}
-
-@Composable
-fun ReplyListAndDetailContent(
-    replyUiState: ReplyUiState,
-    onEmailCardPressed: (Email) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val activity = LocalContext.current as Activity
-    Row(modifier = modifier) {
-        ReplyListOnlyContent(
-            replyUiState = replyUiState,
-            onEmailCardPressed = onEmailCardPressed,
-            modifier = Modifier.weight(1f)
-        )
-        ReplyDetailsScreen(
-            replyUiState = replyUiState,
-            modifier = Modifier.weight(1f),
-            onBackPressed = { activity.finish() }
-        )
-    }
-}
-
-@Composable
-fun ReplyListOnlyContent(
-    replyUiState: ReplyUiState,
-    onEmailCardPressed: (Email) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    ReplyEmailList(
-        emails = replyUiState.currentMailboxEmails,
-        onEmailCardPressed = onEmailCardPressed,
-        modifier = modifier
-    )
 }
 
 @Composable

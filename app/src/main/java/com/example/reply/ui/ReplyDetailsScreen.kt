@@ -66,7 +66,7 @@ fun ReplyDetailsScreen(
             modifier = modifier
                 .fillMaxSize()
                 .background(color = MaterialTheme.colorScheme.inverseOnSurface)
-                .padding(top = dimensionResource(R.dimen.detail_card_list_padding_top))
+                .padding(top = dimensionResource(R.dimen.detail_topbar_padding_bottom))
         ) {
             item {
                 if (isFullScreen) {
